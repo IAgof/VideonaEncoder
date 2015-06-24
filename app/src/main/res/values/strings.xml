@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Main</string>
+    <string name="title_activity_main">MainActivity</string>
+
+    <string name="transcoder_name">Transcoder</string>
+    <string name="title_activity_transcoder">TranscoderActivity</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+</resources>
