@@ -47,8 +47,13 @@ public class TranscoderActivity extends Activity {
                             Environment.DIRECTORY_MOVIES) + File.separator + "Transcoder";
                     String output = directory + File.separator + "output.mp4";
                     //AppendVideos.MergeFiles(directory, output);
+                    ArrayList<String> videos = new ArrayList<String>();
+                    videos.add(Environment.getExternalStoragePublicDirectory(
+                        Environment.DIRECTORY_MOVIES) + File.separator + "transcode_Nexus5_original_One_plus_one_3.mp4");
+                    videos.add(Environment.getExternalStoragePublicDirectory(
+                            Environment.DIRECTORY_MOVIES) + File.separator + "transcode_Nexus5_original_Sony_SP_vlf_2.mp4");
                     try {
-                        AppendFiles.merge();
+                        AppendFiles.merge(videos,"");
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
