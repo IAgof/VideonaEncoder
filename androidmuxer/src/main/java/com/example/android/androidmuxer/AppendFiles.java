@@ -1,4 +1,4 @@
-package com.example.android.transcoder;
+package com.example.android.androidmuxer;
 
 import android.os.Environment;
 import android.util.Log;
@@ -14,20 +14,19 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.OutputStream;
-import java.nio.BufferOverflowException;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.RandomAccessFile;
+import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.WritableByteChannel;
 import java.util.LinkedList;
 import java.util.List;
-
 /**
- * Created by Veronica Lago Fominaya on 10/06/2015.
+ * Created by Veronica Lago Fominaya on 24/06/2015.
  */
-public class AppendVideos {
+public class AppendFiles {
     final static String LOG_TAG = "Merge videos";
     public static void merge() throws IOException {
 
@@ -45,11 +44,11 @@ public class AppendVideos {
 
         for (Movie m : inMovies) {
             for (Track t : m.getTracks()) {
-                /*
-                if (t.getHandler().equals("soun")) {
-                    audioTracks.add(t);
-                }
-                */
+            /*
+            if (t.getHandler().equals("soun")) {
+                audioTracks.add(t);
+            }
+            */
                 if (t.getHandler().equals("vide")) {
                     videoTracks.add(t);
                 }
@@ -58,11 +57,11 @@ public class AppendVideos {
 
         Movie result = new Movie();
 
-        /*
-        if (audioTracks.size() > 0) {
-            result.addTrack(new AppendTrack(audioTracks.toArray(new Track[audioTracks.size()])));
-        }
-        */
+    /*
+    if (audioTracks.size() > 0) {
+        result.addTrack(new AppendTrack(audioTracks.toArray(new Track[audioTracks.size()])));
+    }
+    */
         if (videoTracks.size() > 0) {
             result.addTrack(new AppendTrack(videoTracks.toArray(new Track[videoTracks.size()])));
         }
@@ -107,8 +106,8 @@ public class AppendVideos {
                 //e.printStackTrace();
                 return false;
             } catch (IOException e) {
-                    //e.printStackTrace();
-                    return false;
+                //e.printStackTrace();
+                return false;
             }
         }
 
@@ -165,6 +164,7 @@ public class AppendVideos {
         return true;
     }
 }
+
 class BufferedWritableFileByteChannel implements WritableByteChannel {
     private static final int BUFFER_CAPACITY = 1000000;
 

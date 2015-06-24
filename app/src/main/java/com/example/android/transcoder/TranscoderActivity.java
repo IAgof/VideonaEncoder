@@ -12,6 +12,8 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.example.android.androidmuxer.AppendFiles;
+
 import net.ypresto.androidtranscoder.AndroidTranscoder;
 
 import java.io.File;
@@ -46,7 +48,7 @@ public class TranscoderActivity extends Activity {
                     String output = directory + File.separator + "output.mp4";
                     //AppendVideos.MergeFiles(directory, output);
                     try {
-                        AppendVideos.merge();
+                        AppendFiles.merge();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
