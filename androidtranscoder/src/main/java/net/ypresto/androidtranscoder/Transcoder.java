@@ -16,7 +16,7 @@ import java.util.ArrayList;
  * Created by Veronica Lago Fominaya on 17/06/2015.
  */
 //public class AndroidTranscoder implements ThreadCompleteListener {
-public class AndroidTranscoder {
+public class Transcoder {
     private static final String TAG = "FileTranscoder";
     private final Resolution outResolution;
     private static final int BITRATE_2MBPS = 2000 * 1000;
@@ -52,7 +52,7 @@ public class AndroidTranscoder {
     /**
      * Constructor.
      */
-    public AndroidTranscoder(Resolution resolution) {
+    public Transcoder(Resolution resolution) {
         this.outResolution = resolution;
         this.mBitRate = DEFAULT_BITRATE;
         this.mFrameRate = DEFAULT_FRAMERATE;
@@ -62,7 +62,7 @@ public class AndroidTranscoder {
     /**
      * Constructor.
      */
-    public AndroidTranscoder(Resolution resolution, int bitRate) {
+    public Transcoder(Resolution resolution, int bitRate) {
         this.outResolution = resolution;
         this.mBitRate = getBitRate(bitRate);
         this.mFrameRate = DEFAULT_FRAMERATE;
@@ -72,7 +72,7 @@ public class AndroidTranscoder {
     /**
      * Constructor.
      */
-    public AndroidTranscoder(Resolution resolution, int bitRate, int frameRate, int frameInterval) {
+    public Transcoder(Resolution resolution, int bitRate, int frameRate, int frameInterval) {
         this.outResolution = resolution;
         this.mBitRate = getBitRate(bitRate);
         this.mFrameRate = getFrameRate(frameRate);

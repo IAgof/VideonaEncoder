@@ -13,8 +13,11 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.android.androidmuxer.AppendFiles;
+import com.example.android.androidmuxer.Appender;
+import com.example.android.androidmuxer.VideoAppender;
+import com.googlecode.mp4parser.authoring.Movie;
 
-import net.ypresto.androidtranscoder.AndroidTranscoder;
+import net.ypresto.androidtranscoder.Transcoder;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,13 +29,14 @@ import java.util.ArrayList;
 public class TranscoderActivity extends Activity {
     private static final String TAG = "TranscoderActivity";
     private static final int REQUEST_CODE_PICK = 1;
-    AndroidTranscoder transcoder;
+    private Transcoder transcoder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_transcoder);
-        transcoder = new AndroidTranscoder(AndroidTranscoder.Resolution.HD720);
+        transcoder = new Transcoder(Transcoder.Resolution.HD720);
+
         findViewById(R.id.select_video_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -48,14 +52,17 @@ public class TranscoderActivity extends Activity {
                     String output = directory + File.separator + "output.mp4";
                     //AppendVideos.MergeFiles(directory, output);
                     ArrayList<String> videos = new ArrayList<String>();
+                    Appender appender = new VideoAppender();
                     videos.add(Environment.getExternalStoragePublicDirectory(
                         Environment.DIRECTORY_MOVIES) + File.separator + "transcode_Nexus5_original_One_plus_one_3.mp4");
                     videos.add(Environment.getExternalStoragePublicDirectory(
                             Environment.DIRECTORY_MOVIES) + File.separator + "transcode_Nexus5_original_Sony_SP_vlf_2.mp4");
+                    Movie movie;
                     try {
-                        AppendFiles.merge(videos,"");
+                        movie = appender.append(videos, false);
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        Log.d(TAG, String.valueOf(e));
+                        //e.printStackTrace();
                     }
                     /*
                     Uri uri = Uri.parse(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES) +
@@ -81,7 +88,7 @@ public class TranscoderActivity extends Activity {
                 final long startTime = SystemClock.uptimeMillis();
 
                 final ArrayList<String> videoTranscoded = new ArrayList<>();
-                AndroidTranscoder.Listener listener = new AndroidTranscoder.Listener() {
+                Transcoder.Listener listener = new Transcoder.Listener() {
                     @Override
                     public void onTranscodeProgress(double progress) {
                         if (progress < 0) {

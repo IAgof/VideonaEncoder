@@ -9,17 +9,17 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-/**
- * Created by Veronica Lago Fominaya on 24/06/2015.
- */
-public class AppendFiles {
-    final static String LOG_TAG = "Merge videos";
-    public static Movie merge(ArrayList<String> videoList, boolean addOriginalAudio) throws IOException {
 
+/**
+ * Created by Veronica Lago Fominaya on 25/06/2015.
+ */
+public class VideoAppender implements Appender {
+
+    public Movie append(ArrayList<String> videoPaths, boolean addOriginalAudio) throws IOException {
 
         ArrayList<Movie> movieList = new ArrayList<>();
 
-        for (String video : videoList) {
+        for (String video : videoPaths) {
             movieList.add(MovieCreator.build(video));
         }
 
@@ -49,10 +49,11 @@ public class AppendFiles {
             result.addTrack(new AppendTrack(videoTracks.toArray(new Track[videoTracks.size()])));
         }
 
-        //addAudio(result);
-
-        return result;
+        return getMovie(result);
     }
 
-
+    @Override
+    public Movie getMovie(Movie movie) {
+        return movie;
+    }
 }
