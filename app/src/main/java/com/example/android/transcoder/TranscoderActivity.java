@@ -12,9 +12,11 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.example.android.androidmuxer.AppendFiles;
 import com.example.android.androidmuxer.Appender;
-import com.example.android.androidmuxer.VideoAppender;
+import com.example.android.androidmuxer.Trimmer;
+import com.example.android.androidmuxer.VideoTrimmer;
+import com.example.android.androidmuxer.utils.Constants;
+import com.example.android.androidmuxer.utils.Utils;
 import com.googlecode.mp4parser.authoring.Movie;
 
 import net.ypresto.androidtranscoder.Transcoder;
@@ -52,14 +54,14 @@ public class TranscoderActivity extends Activity {
                     String output = directory + File.separator + "output.mp4";
                     //AppendVideos.MergeFiles(directory, output);
                     ArrayList<String> videos = new ArrayList<String>();
-                    Appender appender = new VideoAppender();
+                    Appender appender = new Appender();
                     videos.add(Environment.getExternalStoragePublicDirectory(
                         Environment.DIRECTORY_MOVIES) + File.separator + "transcode_Nexus5_original_One_plus_one_3.mp4");
                     videos.add(Environment.getExternalStoragePublicDirectory(
                             Environment.DIRECTORY_MOVIES) + File.separator + "transcode_Nexus5_original_Sony_SP_vlf_2.mp4");
                     Movie movie;
                     try {
-                        movie = appender.append(videos, false);
+                        movie = appender.appendVideos(videos, false);
                     } catch (IOException e) {
                         Log.d(TAG, String.valueOf(e));
                         //e.printStackTrace();
@@ -72,6 +74,104 @@ public class TranscoderActivity extends Activity {
 
             }
         });
+        findViewById(R.id.trim_video_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                boolean success;
+                String videoPath = Environment.getExternalStoragePublicDirectory(
+                        Environment.DIRECTORY_MOVIES) + File.separator + "transcode_Nexus5_original_One_plus_one_3.mp4";
+                String outPath = Constants.TEMP_TRIM_DIRECTORY + File.separator +"merge_30sec.mp4";
+                Trimmer trimmer;
+                Movie movie;
+                double movieDuration = 30000;
+
+                try {
+                    trimmer = new VideoTrimmer();
+                    movie = trimmer.trim(videoPath, 0,movieDuration);
+                    Utils.createFile(movie, outPath);
+                    success = true;
+                } catch (IOException e) {
+                    //e.printStackTrace();
+                    Log.d(TAG, String.valueOf(e));
+                    success = false;
+                }
+
+                if(success) {
+                    transcode(outPath);
+                    Log.d(TAG, "ok");
+                } else {
+                    Log.d(TAG, "fail");
+                }
+
+            }
+        });
+    }
+
+    private void transcode(String path) {
+        String videoPath = Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_MOVIES) + File.separator + "original_One_plus_one_3.mp4";
+        String directory = Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_MOVIES) + File.separator + "prueba";
+        final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progress_bar);
+        progressBar.setMax(1000);
+        final long startTime = SystemClock.uptimeMillis();
+
+        final ArrayList<String> videoTranscoded = new ArrayList<>();
+        Transcoder.Listener listener = new Transcoder.Listener() {
+            @Override
+            public void onTranscodeProgress(double progress) {
+                if (progress < 0) {
+                    progressBar.setIndeterminate(true);
+                } else {
+                    progressBar.setIndeterminate(false);
+                    progressBar.setProgress((int) Math.round(progress * 1000));
+                }
+            }
+
+            @Override
+            public void onTranscodeCompleted(String path) {
+                Log.d(TAG, "transcoding finished listener");
+                Log.d(TAG, "transcoding took " + (SystemClock.uptimeMillis() - startTime) + "ms");
+                Toast.makeText(TranscoderActivity.this, "transcoded file placed on " + path, Toast.LENGTH_LONG).show();
+                progressBar.setIndeterminate(false);
+                progressBar.setProgress(1000);
+                videoTranscoded.add(path);
+            }
+
+            @Override
+            public void onTranscodeFinished() {
+                //TODO ver cómo llamarlo cuando el último se codifique
+                Appender appender = new Appender();
+                try {
+                    ArrayList<String> audio = new ArrayList<>();
+                    String audioPath = Environment.getExternalStoragePublicDirectory(
+                            Environment.DIRECTORY_MOVIES) + File.separator + "audio_pop.m4a";
+                    audio.add(audioPath);
+                    double movieDuration = 30000;
+                    String outPath = Environment.getExternalStoragePublicDirectory(
+                            Environment.DIRECTORY_MOVIES) + File.separator + "resultGordo.mp4";;
+                    Movie merge = appender.appendVideos(videoTranscoded, false);
+                    Movie result = appender.addAudio(merge,audio,movieDuration);
+                    Utils.createFile(result, outPath);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                Log.d(TAG,"ya ha acabadoooooooooooooooooo");
+            }
+
+            @Override
+            public void onTranscodeFailed(Exception exception) {
+                progressBar.setIndeterminate(false);
+                progressBar.setProgress(0);
+                Toast.makeText(TranscoderActivity.this, "Transcoder error occurred.", Toast.LENGTH_LONG).show();
+            }
+        };
+        try {
+            transcoder.transcodeFile(new File(path), listener);
+        } catch (IOException e) {
+            Log.d(TAG, String.valueOf(e));
+        }
     }
 
     @Override

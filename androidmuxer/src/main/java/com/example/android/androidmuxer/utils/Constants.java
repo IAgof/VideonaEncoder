@@ -7,7 +7,7 @@ import java.io.File;
 /**
  * Created by Veronica Lago Fominaya on 25/06/2015.
  */
-public class FileConstants {
+public class Constants {
     public static final String TEMP_DIRECTORY = String.format(Environment.getExternalStoragePublicDirectory(
             Environment.DIRECTORY_MOVIES)+ File.separator + "Videona" + File.separator +".temp");
     public static final String TEMP_TRIM_DIRECTORY = String.format(Environment.getExternalStoragePublicDirectory(

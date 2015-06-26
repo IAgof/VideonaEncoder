@@ -31,9 +31,9 @@ public class Transcoder {
     private static final int DEFAULT_BITRATE = BITRATE_5MBPS;
     private static final int DEFAULT_FRAMERATE = FRAMERATE_30FPS;
     private static final int DEFAULT_FRAMEINTERVAL = FRAMEINTERVAL_3SEC;
-    private final int mBitRate;
-    private final int mFrameRate;
-    private final int mFrameInterval;
+    private final int bitRate;
+    private final int frameRate;
+    private final int frameInterval;
     private int numFilesToTranscoder = 1;
     private int numFilesTranscoded = 0;
 
@@ -54,9 +54,9 @@ public class Transcoder {
      */
     public Transcoder(Resolution resolution) {
         this.outResolution = resolution;
-        this.mBitRate = DEFAULT_BITRATE;
-        this.mFrameRate = DEFAULT_FRAMERATE;
-        this.mFrameInterval = DEFAULT_FRAMEINTERVAL;
+        this.bitRate = DEFAULT_BITRATE;
+        this.frameRate = DEFAULT_FRAMERATE;
+        this.frameInterval = DEFAULT_FRAMEINTERVAL;
     }
 
     /**
@@ -64,9 +64,9 @@ public class Transcoder {
      */
     public Transcoder(Resolution resolution, int bitRate) {
         this.outResolution = resolution;
-        this.mBitRate = getBitRate(bitRate);
-        this.mFrameRate = DEFAULT_FRAMERATE;
-        this.mFrameInterval = DEFAULT_FRAMEINTERVAL;
+        this.bitRate = getBitRate(bitRate);
+        this.frameRate = DEFAULT_FRAMERATE;
+        this.frameInterval = DEFAULT_FRAMEINTERVAL;
     }
 
     /**
@@ -74,9 +74,9 @@ public class Transcoder {
      */
     public Transcoder(Resolution resolution, int bitRate, int frameRate, int frameInterval) {
         this.outResolution = resolution;
-        this.mBitRate = getBitRate(bitRate);
-        this.mFrameRate = getFrameRate(frameRate);
-        this.mFrameInterval = getFrameInterval(frameInterval);
+        this.bitRate = getBitRate(bitRate);
+        this.frameRate = getFrameRate(frameRate);
+        this.frameInterval = getFrameInterval(frameInterval);
     }
 
     private int getBitRate(int bitRate) {
@@ -222,13 +222,13 @@ public class Transcoder {
     private MediaFormatStrategy getFormatStrategy(Resolution resolution) {
         switch (resolution) {
             case HD720:
-                return MediaFormatStrategyPresets.createAndroid720pStrategy(mBitRate, mFrameRate, mFrameInterval);
+                return MediaFormatStrategyPresets.createAndroid720pStrategy(bitRate, frameRate, frameInterval);
             case HD1080:
-                return MediaFormatStrategyPresets.createAndroid1080pStrategy(mBitRate, mFrameRate, mFrameInterval);
+                return MediaFormatStrategyPresets.createAndroid1080pStrategy(bitRate, frameRate, frameInterval);
             case HD4K:
-                return MediaFormatStrategyPresets.createAndroid2160pStrategy(mBitRate, mFrameRate, mFrameInterval);
+                return MediaFormatStrategyPresets.createAndroid2160pStrategy(bitRate, frameRate, frameInterval);
             default:
-                return MediaFormatStrategyPresets.createAndroid720pStrategy(mBitRate, mFrameRate, mFrameInterval);
+                return MediaFormatStrategyPresets.createAndroid720pStrategy(bitRate, frameRate, frameInterval);
         }
     }
 

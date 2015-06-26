@@ -31,4 +31,11 @@ tools:context=".TranscoderActivity">
     android:layout_gravity="center_horizontal"
     android:text="Append Video Files" />
 
+<Button
+    android:id="@+id/trim_video_button"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_horizontal"
+    android:text="Trim Video File" />
+
 </LinearLayout>
