@@ -113,22 +113,14 @@ public class Transcoder {
         if(file.isDirectory()) {
             transcodeDirectory(file, transcoderListener);
         } else {
-            try {
-                transcode(file, transcoderListener);
-            } catch (IOException e) {
-                throw e;
-            }
+            transcode(file, transcoderListener);
         }
     }
 
     public void transcodeFile(ArrayList<String> videoList, final Listener transcoderListener) throws IOException {
         numFilesToTranscoder = videoList.size();
         for (String video : videoList) {
-            try {
-                transcode(new File(video), transcoderListener);
-            } catch (IOException e) {
-                throw e;
-            }
+            transcode(new File(video), transcoderListener);
         }
     }
 
@@ -136,11 +128,7 @@ public class Transcoder {
         if(file.isDirectory()) {
             transcodeDirectory(file, transcoderListener);
         } else {
-            try {
-                transcode(file, transcoderListener);
-            } catch (IOException e) {
-                throw e;
-            }
+            transcode(file, transcoderListener);
         }
     }
 
@@ -149,11 +137,7 @@ public class Transcoder {
         numFilesToTranscoder = videoList.length;
         if(numFilesToTranscoder > 0) {
             for (File video : videoList) {
-                try {
-                    transcode(video, transcoderListener);
-                } catch (IOException e) {
-                    throw e;
-                }
+                transcode(video, transcoderListener);
             }
         }
         /*
@@ -162,11 +146,7 @@ public class Transcoder {
                 NotifyingThread thread1 = new NotifyingThread() {
                     @Override
                     public void doRun() {
-                        try {
-                            transcode(video, transcoderListener);
-                        } catch (IOException e) {
-                            //throw e;
-                        }
+                        transcode(video, transcoderListener);
                     }
                 };
                 thread1.addListener(this); // add ourselves as a listener
@@ -198,6 +178,7 @@ public class Transcoder {
                 numFilesTranscoded++;
                 if (numFilesTranscoded == numFilesToTranscoder) {
                     transcoderListener.onTranscodeFinished();
+                    numFilesTranscoded = 0;
                 }
             }
 
@@ -207,16 +188,13 @@ public class Transcoder {
                 numFilesTranscoded++;
                 if (numFilesTranscoded == numFilesToTranscoder) {
                     transcoderListener.onTranscodeFinished();
+                    numFilesTranscoded = 0;
                 }
             }
         };
         Log.d(TAG, "transcoding into " + tempFile);
-        try {
-            MediaTranscoder.getInstance().transcodeVideo(file, tempFile.getAbsolutePath(),
-                    getFormatStrategy(outResolution), listener);
-        } catch (IOException e) {
-            throw e;
-        }
+        MediaTranscoder.getInstance().transcodeVideo(file, tempFile.getAbsolutePath(),
+                getFormatStrategy(outResolution), listener);
     }
 
     private MediaFormatStrategy getFormatStrategy(Resolution resolution) {

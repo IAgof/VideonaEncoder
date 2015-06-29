@@ -78,27 +78,48 @@ public class TranscoderActivity extends Activity {
             @Override
             public void onClick(View v) {
 
-                boolean success;
+                boolean success = true;
+                /*
                 String videoPath = Environment.getExternalStoragePublicDirectory(
                         Environment.DIRECTORY_MOVIES) + File.separator + "transcode_Nexus5_original_One_plus_one_3.mp4";
-                String outPath = Constants.TEMP_TRIM_DIRECTORY + File.separator +"merge_30sec.mp4";
+                */
+                ArrayList<String> videos = new ArrayList<String>();
+                videos.add(Environment.getExternalStoragePublicDirectory(
+                        Environment.DIRECTORY_MOVIES) + File.separator + "transcode_Nexus5_original_One_plus_one_3.mp4");
+                videos.add(Environment.getExternalStoragePublicDirectory(
+                        Environment.DIRECTORY_MOVIES) + File.separator + "transcode_Nexus5_original_Sony_SP_vlf_2.mp4");
+                /*
+                videos.add(Environment.getExternalStoragePublicDirectory(
+                        Environment.DIRECTORY_MOVIES) + File.separator + "Nexus4CameraOpenGL720p_1canal.mp4");
+                videos.add(Environment.getExternalStoragePublicDirectory(
+                        Environment.DIRECTORY_MOVIES) + File.separator + "Nexus5CameraOpenGL720p_1canal.mp4");
+                 */
+                ArrayList<String> result = new ArrayList<String>();
+                //String outPath = Constants.TEMP_TRIM_DIRECTORY + File.separator +"merge_30sec.mp4";
+                //String outPath = Constants.TEMP_TRIM_DIRECTORY;
                 Trimmer trimmer;
                 Movie movie;
                 double movieDuration = 30000;
-
-                try {
-                    trimmer = new VideoTrimmer();
-                    movie = trimmer.trim(videoPath, 0,movieDuration);
-                    Utils.createFile(movie, outPath);
-                    success = true;
-                } catch (IOException e) {
-                    //e.printStackTrace();
-                    Log.d(TAG, String.valueOf(e));
-                    success = false;
+                int i = 1;
+                for (String video : videos) {
+                    try {
+                        String outPath =  Constants.TEMP_TRIM_DIRECTORY + File.separator +
+                                "video_trimmed_"+i+".mp4";
+                        trimmer = new VideoTrimmer();
+                        movie = trimmer.trim(video, 0,movieDuration);
+                        Utils.createFile(movie, outPath);
+                        result.add(outPath);
+                        //success = true;
+                        i++;
+                    } catch (IOException e) {
+                        //e.printStackTrace();
+                        Log.d(TAG, String.valueOf(e));
+                        success = false;
+                    }
                 }
 
                 if(success) {
-                    transcode(outPath);
+                    transcode(result);
                     Log.d(TAG, "ok");
                 } else {
                     Log.d(TAG, "fail");
@@ -108,7 +129,7 @@ public class TranscoderActivity extends Activity {
         });
     }
 
-    private void transcode(String path) {
+    private void transcode(ArrayList<String> videoPaths) {
         String videoPath = Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_MOVIES) + File.separator + "original_One_plus_one_3.mp4";
         String directory = Environment.getExternalStoragePublicDirectory(
@@ -148,12 +169,13 @@ public class TranscoderActivity extends Activity {
                     String audioPath = Environment.getExternalStoragePublicDirectory(
                             Environment.DIRECTORY_MOVIES) + File.separator + "audio_pop.m4a";
                     audio.add(audioPath);
-                    double movieDuration = 30000;
+                    double movieDuration = 60000;
                     String outPath = Environment.getExternalStoragePublicDirectory(
                             Environment.DIRECTORY_MOVIES) + File.separator + "resultGordo.mp4";;
-                    Movie merge = appender.appendVideos(videoTranscoded, false);
-                    Movie result = appender.addAudio(merge,audio,movieDuration);
-                    Utils.createFile(result, outPath);
+                    Movie merge = appender.appendVideos(videoTranscoded, true);
+                    //Movie result = appender.addAudio(merge,audio,movieDuration);
+                    //Utils.createFile(result, outPath);
+                    Utils.createFile(merge, outPath);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -168,7 +190,7 @@ public class TranscoderActivity extends Activity {
             }
         };
         try {
-            transcoder.transcodeFile(new File(path), listener);
+            transcoder.transcodeFile(videoPaths, listener);
         } catch (IOException e) {
             Log.d(TAG, String.valueOf(e));
         }

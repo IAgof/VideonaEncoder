@@ -41,6 +41,10 @@ public class Appender {
             }
         }
 
+        return createMovie(audioTracks, videoTracks);
+    }
+
+    private Movie createMovie(List<Track> audioTracks, List<Track> videoTracks) throws IOException {
         Movie result = new Movie();
 
         if (audioTracks.size() > 0) {
