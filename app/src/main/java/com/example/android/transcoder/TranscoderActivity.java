@@ -15,7 +15,6 @@ import android.widget.Toast;
 import com.example.android.androidmuxer.Appender;
 import com.example.android.androidmuxer.Trimmer;
 import com.example.android.androidmuxer.VideoTrimmer;
-import com.example.android.androidmuxer.utils.Constants;
 import com.example.android.androidmuxer.utils.Utils;
 import com.googlecode.mp4parser.authoring.Movie;
 
@@ -23,20 +22,55 @@ import net.ypresto.androidtranscoder.Transcoder;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * Created by Veronica Lago Fominaya on 09/06/2015.
  */
 public class TranscoderActivity extends Activity {
+
     private static final String TAG = "TranscoderActivity";
     private static final int REQUEST_CODE_PICK = 1;
     private Transcoder transcoder;
+
+    // Constants
+    // Path folders
+    final public static String PATH_APP = Environment.getExternalStoragePublicDirectory(
+            Environment.DIRECTORY_MOVIES) + File.separator + "VideonaTranscoder";
+    final public static String PATH_APP_TRIM = PATH_APP + File.separator + "Trim";
+    final public static String PATH_APP_APPEND = PATH_APP + File.separator + "Append";
+    final public static String PATH_APP_MUSIC = PATH_APP + File.separator + "Music";
+    final public static String PATH_APP_TRANSCODE = PATH_APP + File.separator + "Transcode";
+
+    // Path videos, rename your files to these names.
+    final public static String VIDEO1 = PATH_APP + File.separator + "video1.mp4";
+    final public static String VIDEO2 = PATH_APP + File.separator + "video2.mp4";
+
+    final public static String MUSIC1 = PATH_APP + File.separator + "music1.m4a";
+    final public static String MUSIC2 = PATH_APP + File.separator + "music2.m4a";
+
+
+    String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+    final public static String VIDEO_EXTENSION = ".mp4";
+    String fileName = "VID_" + timeStamp + ".mp4";
+
+    // Output files, path videos
+    private String VIDEO_TRIM = PATH_APP_TRIM + File.separator + "V_Trim_" + timeStamp + VIDEO_EXTENSION;
+    private String VIDEO_APPEND = PATH_APP_APPEND + File.separator + "V_Append_" + timeStamp + VIDEO_EXTENSION;
+    private String VIDEO_MUSIC = PATH_APP_MUSIC + File.separator + "V_Music_" + timeStamp + VIDEO_EXTENSION;
+    private String VIDEO_TRANSCODE = PATH_APP_TRANSCODE + File.separator + "V_Transcode_" + timeStamp + VIDEO_EXTENSION;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_transcoder);
+
+        // Check folder paths
+        checkPaths();
+
         transcoder = new Transcoder(Transcoder.Resolution.HD720);
 
         findViewById(R.id.select_video_button).setOnClickListener(new View.OnClickListener() {
@@ -49,91 +83,125 @@ public class TranscoderActivity extends Activity {
             @Override
             public void onClick(View v) {
 
-                    String directory = Environment.getExternalStoragePublicDirectory(
-                            Environment.DIRECTORY_MOVIES) + File.separator + "Transcoder";
-                    String output = directory + File.separator + "output.mp4";
-                    //AppendVideos.MergeFiles(directory, output);
+                    boolean addOriginalAudio = false;
                     ArrayList<String> videos = new ArrayList<String>();
                     Appender appender = new Appender();
-                    videos.add(Environment.getExternalStoragePublicDirectory(
-                        Environment.DIRECTORY_MOVIES) + File.separator + "transcode_Nexus5_original_One_plus_one_3.mp4");
-                    videos.add(Environment.getExternalStoragePublicDirectory(
-                            Environment.DIRECTORY_MOVIES) + File.separator + "transcode_Nexus5_original_Sony_SP_vlf_2.mp4");
+                    videos.add(VIDEO1);
+                    videos.add(VIDEO2);
                     Movie movie;
                     try {
-                        movie = appender.appendVideos(videos, false);
+                        movie = appender.appendVideos(videos, addOriginalAudio);
+                        Utils.createFile(movie, VIDEO_APPEND);
                     } catch (IOException e) {
                         Log.d(TAG, String.valueOf(e));
-                        //e.printStackTrace();
                     }
-                    /*
-                    Uri uri = Uri.parse(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES) +
-                            File.separator + "output.mp4");
-                    startActivity(new Intent(Intent.ACTION_VIEW).setDataAndType(uri, "video/mp4"));
-                    */
+            }
+        });
+
+        findViewById(R.id.add_music_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+
+                double duration = 60000;
+
+                ArrayList<String> music = new ArrayList<String>();
+                music.add(MUSIC1);
+                ArrayList<String> videos = new ArrayList<String>();
+                Appender appender = new Appender();
+                videos.add(VIDEO1);
+                Movie movie;
+                Movie result;
+                try {
+                    movie = appender.appendVideos(videos, false);
+                    result = appender.addAudio(movie, music, duration);
+                    Utils.createFile(result, VIDEO_MUSIC);
+                } catch (IOException e) {
+                    Log.d(TAG, String.valueOf(e));
+                }
 
             }
         });
+
         findViewById(R.id.trim_video_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                boolean success = true;
-                /*
-                String videoPath = Environment.getExternalStoragePublicDirectory(
-                        Environment.DIRECTORY_MOVIES) + File.separator + "transcode_Nexus5_original_One_plus_one_3.mp4";
-                */
-                ArrayList<String> videos = new ArrayList<String>();
-                videos.add(Environment.getExternalStoragePublicDirectory(
-                        Environment.DIRECTORY_MOVIES) + File.separator + "transcode_Nexus5_original_One_plus_one_3.mp4");
-                videos.add(Environment.getExternalStoragePublicDirectory(
-                        Environment.DIRECTORY_MOVIES) + File.separator + "transcode_Nexus5_original_Sony_SP_vlf_2.mp4");
-                /*
-                videos.add(Environment.getExternalStoragePublicDirectory(
-                        Environment.DIRECTORY_MOVIES) + File.separator + "Nexus4CameraOpenGL720p_1canal.mp4");
-                videos.add(Environment.getExternalStoragePublicDirectory(
-                        Environment.DIRECTORY_MOVIES) + File.separator + "Nexus5CameraOpenGL720p_1canal.mp4");
-                 */
-                ArrayList<String> result = new ArrayList<String>();
-                //String outPath = Constants.TEMP_TRIM_DIRECTORY + File.separator +"merge_30sec.mp4";
-                //String outPath = Constants.TEMP_TRIM_DIRECTORY;
-                Trimmer trimmer;
-                Movie movie;
-                double movieDuration = 30000;
-                int i = 1;
-                for (String video : videos) {
-                    try {
-                        String outPath =  Constants.TEMP_TRIM_DIRECTORY + File.separator +
-                                "video_trimmed_"+i+".mp4";
-                        trimmer = new VideoTrimmer();
-                        movie = trimmer.trim(video, 0,movieDuration);
-                        Utils.createFile(movie, outPath);
-                        result.add(outPath);
-                        //success = true;
-                        i++;
-                    } catch (IOException e) {
-                        //e.printStackTrace();
-                        Log.d(TAG, String.valueOf(e));
-                        success = false;
-                    }
-                }
 
-                if(success) {
-                    transcode(result);
-                    Log.d(TAG, "ok");
-                } else {
-                    Log.d(TAG, "fail");
+                double movieDuration = 30000;
+
+                Trimmer trimmer = new VideoTrimmer();
+                Movie movie = null;
+                try {
+                    movie = trimmer.trim(VIDEO1, 0,movieDuration);
+                    Utils.createFile(movie, VIDEO_TRIM);
+                } catch (IOException e) {
+                    Log.d(TAG, String.valueOf(e));
                 }
+            }
+        });
+        findViewById(R.id.transcode_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                boolean success = true;
+
+                ArrayList<String> result = new ArrayList<String>();
+                result.add(VIDEO1);
+
+                transcode(result);
 
             }
         });
     }
 
+    private void checkPaths() {
+
+        File fApp = new File(PATH_APP);
+
+        if (!fApp.exists()) {
+
+            fApp.mkdir();
+            //  Log.d(LOG_TAG, "Path Videona created");
+        }
+
+        File fAppend = new File(PATH_APP_APPEND);
+
+        if (!fAppend.exists()) {
+
+            fAppend.mkdir();
+            //  Log.d(LOG_TAG, "Path Videona created");
+        }
+
+        File fMusic = new File(PATH_APP_MUSIC);
+
+        if (!fMusic.exists()) {
+
+            fMusic.mkdir();
+            //  Log.d(LOG_TAG, "Path Videona created");
+        }
+
+        File fTranscode = new File(PATH_APP_TRANSCODE);
+
+        if (!fTranscode.exists()) {
+
+            fTranscode.mkdir();
+            //  Log.d(LOG_TAG, "Path Videona created");
+        }
+
+        File fTrim = new File(PATH_APP_TRIM);
+
+        if (!fTrim.exists()) {
+
+            fTrim.mkdir();
+            //  Log.d(LOG_TAG, "Path Videona created");
+        }
+
+
+    }
+
     private void transcode(ArrayList<String> videoPaths) {
-        String videoPath = Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_MOVIES) + File.separator + "original_One_plus_one_3.mp4";
-        String directory = Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_MOVIES) + File.separator + "prueba";
+
         final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progress_bar);
         progressBar.setMax(1000);
         final long startTime = SystemClock.uptimeMillis();
@@ -165,17 +233,13 @@ public class TranscoderActivity extends Activity {
                 //TODO ver cómo llamarlo cuando el último se codifique
                 Appender appender = new Appender();
                 try {
-                    ArrayList<String> audio = new ArrayList<>();
-                    String audioPath = Environment.getExternalStoragePublicDirectory(
-                            Environment.DIRECTORY_MOVIES) + File.separator + "audio_pop.m4a";
-                    audio.add(audioPath);
+
                     double movieDuration = 60000;
-                    String outPath = Environment.getExternalStoragePublicDirectory(
-                            Environment.DIRECTORY_MOVIES) + File.separator + "resultGordo.mp4";;
+
                     Movie merge = appender.appendVideos(videoTranscoded, true);
                     //Movie result = appender.addAudio(merge,audio,movieDuration);
                     //Utils.createFile(result, outPath);
-                    Utils.createFile(merge, outPath);
+                    Utils.createFile(merge, VIDEO_TRANSCODE);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

@@ -38,4 +38,18 @@ tools:context=".TranscoderActivity">
     android:layout_gravity="center_horizontal"
     android:text="Trim Video File" />
 
+<Button
+    android:id="@+id/transcode_button"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_horizontal"
+    android:text="Transcode File" />
+
+<Button
+    android:id="@+id/add_music_button"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_horizontal"
+    android:text="Add music to file" />
+
 </LinearLayout>
